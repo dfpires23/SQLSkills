@@ -1,0 +1,76 @@
+@startuml PL02(03)
+hide methods
+hide stereotypes
+
+entity Teacher {
+	* citizen_card : VARCHAR2 <<PK>>
+	--
+	acronym : VARCHAR2
+	name : VARCHAR2
+	date_of_birth : DATE
+	current_category : VARCHAR2
+	current_area : VARCHAR2
+}
+
+entity Project {
+	* number : INT <<PK>>
+	--
+	acronym : VARCHAR2
+	description : VARCHAR2
+	funding_entity : VARCHAR2
+	start_date : DATE
+	end_date : DATE
+	budget : DECIMAL
+	manager_cc : VARCHAR2 <<FK>>
+}
+
+entity Student {
+	* citizen_card : VARCHAR2 <<PK>>
+	--
+	student_number : INT
+	date_of_birth : DATE
+	degree : VARCHAR2
+	dept_number : INT <<FK>>
+	advisor_cc : VARCHAR2 <<FK>>
+}
+
+entity Department {
+	* number : INT <<PK>>
+	--
+	acronym : VARCHAR2
+	room : VARCHAR2
+	president_cc : VARCHAR2 <<FK>>
+}
+
+entity Teacher_Project {
+	* teacher_cc : VARCHAR2 <<PK, FK>>
+	* project_number : INT <<PK, FK>>
+}
+
+entity Student_Project {
+	* student_cc : VARCHAR2 <<PK, FK>>
+	* project_number : INT <<PK, FK>>
+	--
+	mentor_cc : VARCHAR2 <<FK>>
+}
+
+entity Teacher_Department {
+	* teacher_cc : VARCHAR2 <<PK, FK>>
+	* dept_number : INT <<PK, FK>>
+	--
+	percentage_of_time : DECIMAL
+}
+
+Teacher ||--o{ Project : manages
+Teacher ||--o{ Teacher_Project : works
+Project ||--o{ Teacher_Project : includes
+Student ||--o{ Student_Project : works
+Project ||--o{ Student_Project : includes
+Teacher ||--o{ Student_Project : mentors
+Teacher ||--o{ Department : presides
+Teacher ||--o{ Teacher_Department : works
+Department ||--o{ Teacher_Department : employs
+Department ||--o{ Student : hosts
+Student ||--o{ Student : advises
+
+@enduml

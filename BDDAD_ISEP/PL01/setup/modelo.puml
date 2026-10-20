@@ -1,0 +1,66 @@
+@startuml PL01
+hide methods
+hide stereotypes
+
+entity Instrument {
+	* id : INT <<PK>>
+	--
+	name : VARCHAR2
+	type : VARCHAR2
+}
+
+entity Musician {
+	* id : INT <<PK>>
+	--
+	name : VARCHAR2
+	address_id : INT <<FK>>
+}
+
+entity Musician_Instrument {
+	* musician_id : INT <<PK, FK>>
+	* instrument_id : INT <<PK, FK>>
+	--
+	since_date : DATE
+}
+
+entity Song {
+	* id : INT <<PK>>
+	--
+	title : VARCHAR2
+	duration : TIME
+	album_code : VARCHAR2 <<FK>>
+}
+
+entity Musician_Song {
+	* musician_id : INT <<PK, FK>>
+	* song_id : INT <<PK, FK>>
+}
+
+entity Album {
+	* code : VARCHAR2 <<PK>>
+	--
+	title : VARCHAR2
+	recording_date : DATE
+	format : VARCHAR2
+	release_date : DATE
+	producer_id : INT <<FK>>
+}
+
+entity Address {
+	* id : INT <<PK>>
+	--
+	street : VARCHAR2
+	city : VARCHAR2
+	postal_code : VARCHAR2
+	country : VARCHAR2
+}
+
+Address ||--o{ Musician : "shared by"
+Album ||--o{ Song : has
+Musician ||--o{ Musician_Instrument : plays
+Instrument ||--o{ Musician_Instrument : played
+Musician ||--o{ Musician_Song : participates
+Song ||--o{ Musician_Song : includes
+Musician ||--o{ Album : produces
+
+@enduml
