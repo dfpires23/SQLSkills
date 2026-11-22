@@ -1,0 +1,139 @@
+-- Read-only DBA/assessment diagnostics, not the application data-access API.
+-- Stores inherit names and shopping through Area.
+SELECT S.STOREID,
+       A.MAPID,
+       A.NAME,
+       A.SHOPPINGID
+  FROM STORE S
+  JOIN AREA A
+ON A.AREAID = S.AREAID
+ ORDER BY S.STOREID;
+-- Elevators reuse Area-Level; no duplicate elevator-level table.
+SELECT A.MAPID,
+       A.NAME,
+       L.LEVELVALUE
+  FROM AREA A
+  JOIN AREACLASSIFICATION C
+ON C.AREAID = A.AREAID
+  JOIN AREALEVEL AL
+ON AL.AREAID = A.AREAID
+  JOIN SHOPLEVEL L
+ON L.LEVELID = AL.LEVELID
+ WHERE C.CLASSIFICATIONTYPE = 'highway'
+   AND C.CATEGORY = 'elevator'
+ ORDER BY A.MAPID,
+          L.LEVELVALUE;
+-- Ring components and holes (boundaryNo > 0).
+SELECT AREAID,
+       POLYGONNO,
+       BOUNDARYNO,
+       COUNT(*) AS POINT_COUNT
+  FROM AREAPOLYGON
+ GROUP BY AREAID,
+          POLYGONNO,
+          BOUNDARYNO
+ ORDER BY AREAID,
+          POLYGONNO,
+          BOUNDARYNO;
+-- Full order information is obtained through relationships, not duplicated strings.
+SELECT O.CODE,
+       I.ITEMNO,
+       C.EMAIL AS CUSTOMEREMAIL,
+       P.CODE AS PRODUCT_CODE,
+       P.NAME AS PRODUCT_NAME,
+       A.NAME AS STORE_NAME,
+       P.WEIGHTKG,
+       P.VOLUMEL,
+       P.NEEDSCOOLING,
+       O.DELIVERYTIME
+  FROM CUSTOMERORDER O
+  JOIN CUSTOMER C
+ON C.CUSTOMERID = O.CUSTOMERID
+  JOIN ORDERITEM I
+ON I.ORDERID = O.ORDERID
+  JOIN PRODUCT P
+ON P.PRODUCTID = I.PRODUCTID
+  JOIN STORE S
+ON S.STOREID = P.STOREID
+  JOIN AREA A
+ON A.AREAID = S.AREAID
+ ORDER BY O.CODE,
+          I.ITEMNO;
+
+SELECT C.CARTID,
+       NVL(
+          SUM(I.QUANTITY * P.PRICEEUR),
+          0
+       ) AS TOTALEUR
+  FROM SHOPPINGCART C
+  LEFT JOIN CARTITEM I
+ON I.CARTID = C.CARTID
+  LEFT JOIN PRODUCT P
+ON P.PRODUCTID = I.PRODUCTID
+ GROUP BY C.CARTID;
+
+SELECT ROBOTID,
+       NAME,
+       MAXWEIGHTKG,
+       MAXVOLUMEL,
+       HASCOOLING,
+       STATUS
+  FROM ROBOT
+ ORDER BY ROBOTID;
+
+SELECT SO.ORDERID,
+       SO.SUBORDERNO,
+       SO.ROBOTID,
+       SUM(P.WEIGHTKG) AS WEIGHTKG,
+       SUM(P.VOLUMEL) AS VOLUMEL
+  FROM SUBORDER SO
+  JOIN SUBORDERITEM SI
+ON SI.ORDERID = SO.ORDERID
+   AND SI.SUBORDERNO = SO.SUBORDERNO
+  JOIN ORDERITEM OI
+ON OI.ORDERID = SI.ORDERID
+   AND OI.ITEMNO = SI.ITEMNO
+  JOIN PRODUCT P
+ON P.PRODUCTID = OI.PRODUCTID
+ GROUP BY SO.ORDERID,
+          SO.SUBORDERNO,
+          SO.ROBOTID;
+
+-- Each integrity query must return zero rows (cross-table rules are not plain CHECKs).
+SELECT AL.AREAID,
+       AL.LEVELID
+  FROM AREALEVEL AL
+  JOIN AREA A
+ON A.AREAID = AL.AREAID
+  JOIN SHOPLEVEL L
+ON L.LEVELID = AL.LEVELID
+ WHERE A.SHOPPINGID <> L.SHOPPINGID;
+
+SELECT S.STOREID
+  FROM STORE S
+  JOIN AREA A
+ON A.AREAID = S.AREAID
+ WHERE TRIM(A.NAME) IS NULL
+    OR NOT EXISTS (
+   SELECT 1
+     FROM AREACLASSIFICATION C
+    WHERE C.AREAID = S.AREAID
+      AND C.CLASSIFICATIONTYPE = 'shop'
+);
+-- Current stock comparison is diagnostic: stock is checked on cart addition, not reserved.
+SELECT C.CARTID,
+       C.PRODUCTID,
+       C.QUANTITY,
+       P.STOCKUNITS
+  FROM CARTITEM C
+  JOIN PRODUCT P
+ON P.PRODUCTID = C.PRODUCTID
+ WHERE C.QUANTITY > P.STOCKUNITS;
+-- Final aggregate check. Run after loading a complete dataset and before committing.
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := VALIDATEDATA('Loaded data');
+   DBMS_OUTPUT.PUT_LINE('PASS: loaded-data structure and allocation checks');
+END;
+/

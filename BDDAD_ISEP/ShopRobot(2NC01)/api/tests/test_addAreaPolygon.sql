@@ -1,0 +1,181 @@
+-- happy
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => 10006,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.6291,
+      PLATITUDE   => 41.1579
+   );
+
+   IF VRESULT > 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Area Polygon created successfully!');
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   END IF;
+
+END;
+
+-- unhappy - All parameters are required
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => NULL,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 41.149
+   );
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Invalid polygon number
+DECLARE
+   VRESULT NUMBER;
+   VAREAID AREA.AREAID%TYPE;
+BEGIN
+   SELECT AREAID
+     INTO VAREAID
+     FROM AREA
+    WHERE ROWNUM = 1;
+
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => VAREAID,
+      PPOLYGONNO  => 0,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 41.149
+   );
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Invalid boundary number
+DECLARE
+   VRESULT NUMBER;
+   VAREAID AREA.AREAID%TYPE;
+BEGIN
+   SELECT AREAID
+     INTO VAREAID
+     FROM AREA
+    WHERE ROWNUM = 1;
+
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => VAREAID,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 0,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 41.149
+   );
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Invalid point order
+DECLARE
+   VRESULT NUMBER;
+   VAREAID AREA.AREAID%TYPE;
+BEGIN
+   SELECT AREAID
+     INTO VAREAID
+     FROM AREA
+    WHERE ROWNUM = 1;
+
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => VAREAID,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 0,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 41.149
+   );
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Invalid longitude
+DECLARE
+   VRESULT NUMBER;
+   VAREAID AREA.AREAID%TYPE;
+BEGIN
+   SELECT AREAID
+     INTO VAREAID
+     FROM AREA
+    WHERE ROWNUM = 1;
+
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => VAREAID,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => 181,
+      PLATITUDE   => 41.149
+   );
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Invalid latitude
+DECLARE
+   VRESULT NUMBER;
+   VAREAID AREA.AREAID%TYPE;
+BEGIN
+   SELECT AREAID
+     INTO VAREAID
+     FROM AREA
+    WHERE ROWNUM = 1;
+
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => VAREAID,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 91
+   );
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+-- unhappy - Area Id not found
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_AREA.ADDAREAPOLYGON(
+      PAREAID     => 999999,
+      PPOLYGONNO  => 1,
+      PBOUNDARYNO => 1,
+      PPOINTORDER => 1,
+      PLONGITUDE  => - 8.611,
+      PLATITUDE   => 41.149
+   );
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;

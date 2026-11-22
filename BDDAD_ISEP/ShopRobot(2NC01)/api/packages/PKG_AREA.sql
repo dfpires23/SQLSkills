@@ -1,0 +1,314 @@
+CREATE OR REPLACE PACKAGE PKG_AREA AS
+   FUNCTION ADDAREA (
+      PSHOPPINGID   IN AREA.SHOPPINGID%TYPE,
+      PMAPID        IN AREA.MAPID%TYPE,
+      PNAME         IN AREA.NAME%TYPE,
+      PGEOMETRYTYPE IN AREA.GEOMETRYTYPE%TYPE,
+      PLONGITUDE    IN AREA.LONGITUDE%TYPE,
+      PLATITUDE     IN AREA.LATITUDE%TYPE,
+      PLEVELID      IN SHOPLEVEL.LEVELID%TYPE
+   ) RETURN NUMBER;
+
+   FUNCTION ADDAREACLASSIFICATION (
+      PAREAID             IN AREACLASSIFICATION.AREAID%TYPE,
+      PCLASSIFICATIONTYPE IN AREACLASSIFICATION.CLASSIFICATIONTYPE%TYPE,
+      PCATEGORY           IN AREACLASSIFICATION.CATEGORY%TYPE
+   ) RETURN NUMBER;
+
+   FUNCTION ADDAREAPOLYGON (
+      PAREAID     IN AREAPOLYGON.AREAID%TYPE,
+      PPOLYGONNO  IN AREAPOLYGON.POLYGONNO%TYPE,
+      PBOUNDARYNO IN AREAPOLYGON.BOUNDARYNO%TYPE,
+      PPOINTORDER IN AREAPOLYGON.POINTORDER%TYPE,
+      PLONGITUDE  IN AREAPOLYGON.LONGITUDE%TYPE,
+      PLATITUDE   IN AREAPOLYGON.LATITUDE%TYPE
+   ) RETURN NUMBER;
+
+END PKG_AREA;
+/
+
+CREATE OR REPLACE PACKAGE BODY PKG_AREA AS
+
+   CURSOR GET_LEVEL (
+      PLEVELID IN SHOPLEVEL.LEVELID%TYPE
+   ) IS
+   SELECT 1
+     FROM SHOPLEVEL
+    WHERE LEVELID = PLEVELID;
+
+   CURSOR GET_AREA (
+      PAREAID IN AREA.AREAID%TYPE
+   ) IS
+   SELECT 1
+     FROM AREA
+    WHERE AREAID = PAREAID;
+
+   CURSOR GET_AREA_MAPID (
+      PMAPID IN AREA.MAPID%TYPE
+   ) IS
+   SELECT 1
+     FROM AREA
+    WHERE MAPID = PMAPID;
+
+   CURSOR GET_SHOP (
+      PSHOPPINGID IN SHOPPING.SHOPPINGID%TYPE
+   ) IS
+   SELECT 1
+     FROM SHOPPING
+    WHERE SHOPPINGID = PSHOPPINGID;
+
+   FUNCTION ADDAREA (
+      PSHOPPINGID   IN AREA.SHOPPINGID%TYPE,
+      PMAPID        IN AREA.MAPID%TYPE,
+      PNAME         IN AREA.NAME%TYPE,
+      PGEOMETRYTYPE IN AREA.GEOMETRYTYPE%TYPE,
+      PLONGITUDE    IN AREA.LONGITUDE%TYPE,
+      PLATITUDE     IN AREA.LATITUDE%TYPE,
+      PLEVELID      IN SHOPLEVEL.LEVELID%TYPE
+   ) RETURN NUMBER IS
+
+      PAREAID NUMBER;
+      T_LEVEL NUMBER(1);
+      T_SHOP  NUMBER(1);
+      T_MAPID NUMBER(1);
+   BEGIN
+      IF PSHOPPINGID IS NULL
+      OR PMAPID IS NULL
+      OR PNAME IS NULL
+      OR PGEOMETRYTYPE IS NULL
+      OR PLONGITUDE IS NULL
+      OR PLATITUDE IS NULL
+      OR PLEVELID IS NULL THEN
+         RAISE_APPLICATION_ERROR(
+            -20000,
+            'All parameters are required.'
+         );
+      END IF;
+
+      OPEN GET_AREA_MAPID(PMAPID);
+      FETCH GET_AREA_MAPID INTO T_MAPID;
+      IF GET_AREA_MAPID%FOUND THEN
+         CLOSE GET_AREA_MAPID;
+         RAISE_APPLICATION_ERROR(
+            -20300,
+            'Map Id already exist'
+         );
+      END IF;
+
+      CLOSE GET_AREA_MAPID;
+      IF PGEOMETRYTYPE NOT IN ( 'Polygon',
+                                'MultiPolygon' ) THEN
+         RAISE_APPLICATION_ERROR(
+            -20301,
+            'GeometryType invalid'
+         );
+      END IF;
+
+      OPEN GET_LEVEL(PLEVELID);
+      FETCH GET_LEVEL INTO T_LEVEL;
+      IF GET_LEVEL%NOTFOUND THEN
+         CLOSE GET_LEVEL;
+         RAISE_APPLICATION_ERROR(
+            -20302,
+            'Level Id not found'
+         );
+      END IF;
+
+      CLOSE GET_LEVEL;
+      OPEN GET_SHOP(PSHOPPINGID);
+      FETCH GET_SHOP INTO T_SHOP;
+      IF GET_SHOP%NOTFOUND THEN
+         CLOSE GET_SHOP;
+         RAISE_APPLICATION_ERROR(
+            -20202,
+            'Shopping Id not found'
+         );
+      END IF;
+
+      CLOSE GET_SHOP;
+      BEGIN
+         SAVEPOINT SP_ADD_AREA;
+         LOCK TABLE AREA IN EXCLUSIVE MODE;
+         SELECT NVL(
+            MAX(AREAID),
+            0
+         ) + 1
+           INTO PAREAID
+           FROM AREA;
+
+         INSERT INTO AREA (
+            AREAID,
+            SHOPPINGID,
+            MAPID,
+            NAME,
+            GEOMETRYTYPE,
+            LONGITUDE,
+            LATITUDE
+         ) VALUES
+            ( PAREAID,
+              PSHOPPINGID,
+              PMAPID,
+              PNAME,
+              PGEOMETRYTYPE,
+              PLONGITUDE,
+              PLATITUDE );
+
+         INSERT INTO AREALEVEL (
+            AREAID,
+            LEVELID
+         ) VALUES
+            ( PAREAID,
+              PLEVELID );
+
+         COMMIT;
+         RETURN PAREAID;
+      EXCEPTION
+         WHEN OTHERS THEN
+            IF GET_AREA_MAPID%ISOPEN THEN
+               CLOSE GET_AREA_MAPID;
+            END IF;
+            IF GET_LEVEL%ISOPEN THEN
+               CLOSE GET_LEVEL;
+            END IF;
+            IF GET_SHOP%ISOPEN THEN
+               CLOSE GET_SHOP;
+            END IF;
+            ROLLBACK TO SP_ADD_AREA;
+            RAISE;
+      END;
+
+   END ADDAREA;
+
+   FUNCTION ADDAREACLASSIFICATION (
+      PAREAID             IN AREACLASSIFICATION.AREAID%TYPE,
+      PCLASSIFICATIONTYPE IN AREACLASSIFICATION.CLASSIFICATIONTYPE%TYPE,
+      PCATEGORY           IN AREACLASSIFICATION.CATEGORY%TYPE
+   ) RETURN NUMBER IS
+      T_AREA NUMBER(1);
+   BEGIN
+      IF PAREAID IS NULL
+      OR PCLASSIFICATIONTYPE IS NULL
+      OR PCATEGORY IS NULL THEN
+         RAISE_APPLICATION_ERROR(
+            -20000,
+            'All parameters are required.'
+         );
+      END IF;
+
+      OPEN GET_AREA(PAREAID);
+      FETCH GET_AREA INTO T_AREA;
+      IF GET_AREA%NOTFOUND THEN
+         CLOSE GET_AREA;
+         RAISE_APPLICATION_ERROR(
+            -20303,
+            'Area Id not found'
+         );
+      END IF;
+
+      CLOSE GET_AREA;
+      IF PCLASSIFICATIONTYPE NOT IN ( 'indoor',
+                                      'shop',
+                                      'amenity',
+                                      'craft',
+                                      'highway' ) THEN
+         RAISE_APPLICATION_ERROR(
+            -20304,
+            'Classification Type invalid'
+         );
+         RETURN 0;
+      END IF;
+
+      INSERT INTO AREACLASSIFICATION (
+         AREAID,
+         CLASSIFICATIONTYPE,
+         CATEGORY
+      ) VALUES
+         ( PAREAID,
+           PCLASSIFICATIONTYPE,
+           PCATEGORY );
+
+      RETURN 1;
+   EXCEPTION
+      WHEN OTHERS THEN
+         IF GET_AREA%ISOPEN THEN
+            CLOSE GET_AREA;
+         END IF;
+         RAISE;
+   END ADDAREACLASSIFICATION;
+
+   FUNCTION ADDAREAPOLYGON (
+      PAREAID     IN AREAPOLYGON.AREAID%TYPE,
+      PPOLYGONNO  IN AREAPOLYGON.POLYGONNO%TYPE,
+      PBOUNDARYNO IN AREAPOLYGON.BOUNDARYNO%TYPE,
+      PPOINTORDER IN AREAPOLYGON.POINTORDER%TYPE,
+      PLONGITUDE  IN AREAPOLYGON.LONGITUDE%TYPE,
+      PLATITUDE   IN AREAPOLYGON.LATITUDE%TYPE
+   ) RETURN NUMBER IS
+      T_AREA NUMBER(1);
+   BEGIN
+      IF PAREAID IS NULL
+      OR PPOLYGONNO IS NULL
+      OR PBOUNDARYNO IS NULL
+      OR PPOINTORDER IS NULL
+      OR PLONGITUDE IS NULL
+      OR PLATITUDE IS NULL THEN
+         RAISE_APPLICATION_ERROR(
+            -20000,
+            'All parameters are required.'
+         );
+      END IF;
+
+      IF ( PPOLYGONNO <= 0
+      OR PBOUNDARYNO <= 0
+      OR PPOINTORDER <= 0 ) THEN
+         RAISE_APPLICATION_ERROR(
+            -20305,
+            'polygonNo/boundaryNo/pointOrder invalid'
+         );
+      END IF;
+
+      IF ( PLONGITUDE NOT BETWEEN - 180 AND 180
+      OR PLATITUDE NOT BETWEEN - 90 AND 90 ) THEN
+         RAISE_APPLICATION_ERROR(
+            -20306,
+            'Longitude/Latitude invalid'
+         );
+      END IF;
+
+      OPEN GET_AREA(PAREAID);
+      FETCH GET_AREA INTO T_AREA;
+      IF GET_AREA%NOTFOUND THEN
+         CLOSE GET_AREA;
+         RAISE_APPLICATION_ERROR(
+            -20303,
+            'Area Id not found'
+         );
+      END IF;
+
+      CLOSE GET_AREA;
+      INSERT INTO AREAPOLYGON (
+         AREAID,
+         POLYGONNO,
+         BOUNDARYNO,
+         POINTORDER,
+         LONGITUDE,
+         LATITUDE
+      ) VALUES
+         ( PAREAID,
+           PPOLYGONNO,
+           PBOUNDARYNO,
+           PPOINTORDER,
+           PLONGITUDE,
+           PLATITUDE );
+
+      RETURN 1;
+   EXCEPTION
+      WHEN OTHERS THEN
+         IF GET_AREA%ISOPEN THEN
+            CLOSE GET_AREA;
+         END IF;
+         RAISE;
+   END ADDAREAPOLYGON;
+
+END PKG_AREA;
+/

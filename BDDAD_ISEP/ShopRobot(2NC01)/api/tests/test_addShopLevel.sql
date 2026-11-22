@@ -1,0 +1,73 @@
+-- happy
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => 2,
+      PLEVELVALUE => 0
+   );
+   IF VRESULT > 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Shopping Level created successfully!');
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   END IF;
+
+END;
+
+-- unhappy
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => 1,
+      PLEVELVALUE => 0
+   );
+   IF VRESULT > 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Shopping Level created successfully!');
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   END IF;
+
+END;
+
+-- unhappy - Shopping ID is NULL
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => NULL,
+      PLEVELVALUE => 1
+   );
+END;
+
+-- unhappy - Level value is NULL
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => 1,
+      PLEVELVALUE => NULL
+   );
+END;
+
+-- unhappy - Shopping not found
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => 999999,
+      PLEVELVALUE => 1
+   );
+END;
+
+-- unhappy - Level value already exists
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_SHOPPING.ADDSHOPLEVEL(
+      PSHOPPINGID => 2,
+      PLEVELVALUE => 0
+   );
+END;

@@ -1,0 +1,62 @@
+-- happy
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_ROBOT.ADDROBOTTYPE(
+      PMAXWEIGHTKG => 999,
+      PMAXVOLUMEL  => 999,
+      PHASCOOLING  => 0
+   );
+
+   IF VRESULT > 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Robot type created successfully!');
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
+   END IF;
+
+END;
+
+-- unhappy - Max weight is NULL
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_ROBOT.ADDROBOTTYPE(
+      PMAXWEIGHTKG => NULL,
+      PMAXVOLUMEL  => 100,
+      PHASCOOLING  => 0
+   );
+END;
+
+-- unhappy - Max volume is NULL
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_ROBOT.ADDROBOTTYPE(
+      PMAXWEIGHTKG => 100,
+      PMAXVOLUMEL  => NULL,
+      PHASCOOLING  => 0
+   );
+END;
+
+-- unhappy - Has cooling is NULL
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_ROBOT.ADDROBOTTYPE(
+      PMAXWEIGHTKG => 100,
+      PMAXVOLUMEL  => 100,
+      PHASCOOLING  => NULL
+   );
+END;
+
+-- unhappy - Robot type already exists
+DECLARE
+   VRESULT NUMBER;
+BEGIN
+   VRESULT := PKG_ROBOT.ADDROBOTTYPE(
+      PMAXWEIGHTKG => 999,
+      PMAXVOLUMEL  => 999,
+      PHASCOOLING  => 0
+   );
+END;
