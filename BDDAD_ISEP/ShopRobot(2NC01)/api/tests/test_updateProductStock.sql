@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT    BOOLEAN;
@@ -20,6 +22,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Product not found
 DECLARE
@@ -36,3 +39,4 @@ BEGIN
    END IF;
 
 END;
+/

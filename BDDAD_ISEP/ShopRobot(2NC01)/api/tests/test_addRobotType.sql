@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT NUMBER;
@@ -16,6 +18,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Max weight is NULL
 DECLARE
@@ -27,6 +30,7 @@ BEGIN
       PHASCOOLING  => 0
    );
 END;
+/
 
 -- unhappy - Max volume is NULL
 DECLARE
@@ -38,6 +42,7 @@ BEGIN
       PHASCOOLING  => 0
    );
 END;
+/
 
 -- unhappy - Has cooling is NULL
 DECLARE
@@ -49,6 +54,7 @@ BEGIN
       PHASCOOLING  => NULL
    );
 END;
+/
 
 -- unhappy - Robot type already exists
 DECLARE
@@ -60,3 +66,4 @@ BEGIN
       PHASCOOLING  => 0
    );
 END;
+/

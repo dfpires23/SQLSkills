@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 --happy
 DECLARE
     VRESULT NUMBER;
@@ -17,6 +19,7 @@ BEGIN
     END IF;
 
 END;
+/
 
 -- unhappy - Required parameters are NULL
 DECLARE
@@ -29,3 +32,4 @@ BEGIN
         PQUANTITY   => 1
     );
 END;
+/

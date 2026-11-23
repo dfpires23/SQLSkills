@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT NUMBER;
@@ -14,6 +16,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy
 DECLARE
@@ -31,6 +34,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Shopping ID is NULL
 DECLARE
@@ -41,6 +45,7 @@ BEGIN
       PLEVELVALUE => 1
    );
 END;
+/
 
 -- unhappy - Level value is NULL
 DECLARE
@@ -51,6 +56,7 @@ BEGIN
       PLEVELVALUE => NULL
    );
 END;
+/
 
 -- unhappy - Shopping not found
 DECLARE
@@ -61,6 +67,7 @@ BEGIN
       PLEVELVALUE => 1
    );
 END;
+/
 
 -- unhappy - Level value already exists
 DECLARE
@@ -71,3 +78,4 @@ BEGIN
       PLEVELVALUE => 0
    );
 END;
+/

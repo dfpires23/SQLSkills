@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT NUMBER;
@@ -18,6 +20,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - All parameters are required
 DECLARE
@@ -36,6 +39,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid polygon number
 DECLARE
@@ -61,6 +65,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid boundary number
 DECLARE
@@ -86,6 +91,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid point order
 DECLARE
@@ -111,6 +117,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid longitude
 DECLARE
@@ -136,6 +143,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid latitude
 DECLARE
@@ -161,6 +169,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Area Id not found
 DECLARE
@@ -179,3 +188,4 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/

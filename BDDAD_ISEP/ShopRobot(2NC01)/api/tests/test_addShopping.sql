@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT NUMBER;
@@ -11,12 +13,13 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy 
 DECLARE
    VRESULT NUMBER;
 BEGIN
-   VRESULT := ADDSHOPPING(PNAME => 'Shopping Teste');
+   VRESULT := PKG_SHOPPING.ADDSHOPPING(PNAME => 'Shopping Teste');
    IF VRESULT > 0 THEN
       DBMS_OUTPUT.PUT_LINE('Shopping created successfully!');
       DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
@@ -25,6 +28,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Name is NULL
 DECLARE
@@ -33,6 +37,7 @@ BEGIN
    VRESULT := PKG_SHOPPING.ADDSHOPPING(PNAME => NULL);
    DBMS_OUTPUT.PUT_LINE('Result: ' || VRESULT);
 END;
+/
 
 -- unhappy - Shopping name already exists
 DECLARE
@@ -40,3 +45,4 @@ DECLARE
 BEGIN
    VRESULT := PKG_SHOPPING.ADDSHOPPING(PNAME => 'Shopping Teste 2');
 END;
+/

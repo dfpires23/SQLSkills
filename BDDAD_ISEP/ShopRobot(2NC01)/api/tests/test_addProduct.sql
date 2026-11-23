@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 --happy
 DECLARE
    VRESULT NUMBER;
@@ -20,6 +22,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 --unhappy
 DECLARE
@@ -43,6 +46,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - All parameters are required
 DECLARE
@@ -62,6 +66,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Store not found
 DECLARE
@@ -81,3 +86,4 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/

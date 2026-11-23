@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 --happy
 DECLARE
    VRESULT NUMBER;
@@ -16,6 +18,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Email is NULL
 DECLARE
@@ -27,6 +30,7 @@ BEGIN
       PLASTNAME  => 'Silva'
    );
 END;
+/
 
 -- unhappy - First name is NULL
 DECLARE
@@ -38,6 +42,7 @@ BEGIN
       PLASTNAME  => 'Silva'
    );
 END;
+/
 
 -- unhappy - Last name is NULL
 DECLARE
@@ -49,6 +54,7 @@ BEGIN
       PLASTNAME  => NULL
    );
 END;
+/
 
 -- unhappy - Email already exists
 DECLARE
@@ -60,3 +66,4 @@ BEGIN
       PLASTNAME  => 'Santos'
    );
 END;
+/

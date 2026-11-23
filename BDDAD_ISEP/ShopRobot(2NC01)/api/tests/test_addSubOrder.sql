@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT     NUMBER;
@@ -38,6 +40,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Robot not found
 DECLARE
@@ -49,3 +52,4 @@ BEGIN
       PROBOTID    => 999999
    );
 END;
+/

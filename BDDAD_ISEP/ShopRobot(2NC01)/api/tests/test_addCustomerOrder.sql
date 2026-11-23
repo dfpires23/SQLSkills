@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 --happy
 DECLARE
    VRESULT NUMBER;
@@ -15,6 +17,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 --unhappy
 DECLARE
@@ -33,6 +36,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Customer not found
 DECLARE
@@ -43,3 +47,4 @@ BEGIN
       PDELIVERYTIME => SYSTIMESTAMP + 1
    );
 END;
+/

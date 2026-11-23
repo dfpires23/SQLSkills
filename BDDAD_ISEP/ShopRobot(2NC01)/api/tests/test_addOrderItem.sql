@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- unhappy - Cart has no items
 DECLARE
    VRESULT BOOLEAN;
@@ -13,3 +15,4 @@ BEGIN
    END IF;
 
 END;
+/

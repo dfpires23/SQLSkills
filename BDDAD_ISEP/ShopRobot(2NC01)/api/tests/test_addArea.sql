@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 -- happy
 DECLARE
    VRESULT NUMBER;
@@ -20,6 +22,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - All parameters are required
 DECLARE
@@ -39,6 +42,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Map Id already exists
 DECLARE
@@ -65,6 +69,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Invalid geometry type
 DECLARE
@@ -84,6 +89,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Level Id not found
 DECLARE
@@ -103,6 +109,7 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/
 
 -- unhappy - Shopping Id not found
 DECLARE
@@ -122,3 +129,4 @@ EXCEPTION
       DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
 END;
+/

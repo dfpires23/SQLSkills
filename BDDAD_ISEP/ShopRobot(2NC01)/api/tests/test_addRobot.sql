@@ -1,3 +1,5 @@
+SET SERVEROUTPUT ON;
+
 --happy
 DECLARE
    VRESULT NUMBER;
@@ -18,6 +20,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 --unhappy
 DECLARE
@@ -39,6 +42,7 @@ BEGIN
    END IF;
 
 END;
+/
 
 -- unhappy - Shopping ID is NULL
 DECLARE
@@ -52,6 +56,7 @@ BEGIN
       PSTATUS      => 'READY'
    );
 END;
+/
 
 -- unhappy - Name is NULL
 DECLARE
@@ -65,6 +70,7 @@ BEGIN
       PSTATUS      => 'READY'
    );
 END;
+/
 
 -- unhappy - Battery percentage is NULL
 DECLARE
@@ -78,6 +84,7 @@ BEGIN
       PSTATUS      => 'READY'
    );
 END;
+/
 
 -- unhappy - Status is NULL
 DECLARE
@@ -91,6 +98,7 @@ BEGIN
       PSTATUS      => NULL
    );
 END;
+/
 
 -- unhappy - Robot status is invalid
 DECLARE
@@ -104,6 +112,7 @@ BEGIN
       PSTATUS      => 'INVALID'
    );
 END;
+/
 
 -- unhappy - Robot type not found
 DECLARE
@@ -117,6 +126,7 @@ BEGIN
       PSTATUS      => 'READY'
    );
 END;
+/
 
 -- unhappy - Shopping not found
 DECLARE
@@ -130,3 +140,4 @@ BEGIN
       PSTATUS      => 'READY'
    );
 END;
+/
